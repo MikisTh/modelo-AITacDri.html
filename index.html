@@ -1,222 +1,219 @@
 <!-- Arquivo: RegistroTacDri.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Registro TAC/DRI</title>
 
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    body{
-      background:#f4f6f9;
-      padding:30px;
-      color:#222;
+    body {
+      background: #f4f6f9;
+      padding: 30px;
+      color: #222;
     }
 
-    .container{
-      max-width:1100px;
-      margin:auto;
-      background:white;
-      border-radius:12px;
-      padding:25px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    h1{
-      text-align:center;
-      margin-bottom:25px;
-      color:#1e3a8a;
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #1e3a8a;
     }
 
-    .form-grid{
-      display:grid;
-      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-      gap:15px;
-      margin-bottom:20px;
+    .api-status {
+      margin-bottom: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
-    .field{
-      display:flex;
-      flex-direction:column;
+    .online {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    label{
-      margin-bottom:6px;
-      font-weight:bold;
-      font-size:14px;
+    .offline {
+      background: #fee2e2;
+      color: #991b1b;
     }
 
-    input{
-      padding:10px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      font-size:14px;
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
     }
 
-    button{
-      border:none;
-      padding:12px 18px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:bold;
-      transition:0.3s;
+    .field {
+      display: flex;
+      flex-direction: column;
     }
 
-    .btn-add{
-      background:#2563eb;
-      color:white;
+    label {
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
     }
 
-    .btn-add:hover{
-      background:#1d4ed8;
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
     }
 
-    .btn-clear{
-      background:#dc2626;
-      color:white;
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
     }
 
-    .btn-clear:hover{
-      background:#b91c1c;
+    .btn-add {
+      background: #2563eb;
+      color: white;
     }
 
-    .buttons{
-      display:flex;
-      gap:10px;
-      margin-bottom:20px;
+    .btn-add:hover {
+      background: #1d4ed8;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:20px;
+    .btn-clear {
+      background: #dc2626;
+      color: white;
     }
 
-    table thead{
-      background:#1e3a8a;
-      color:white;
+    .btn-clear:hover {
+      background: #b91c1c;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table thead {
+      background: #1e3a8a;
+      color: white;
     }
 
     table th,
-    table td{
-      padding:12px;
-      border:1px solid #ddd;
-      text-align:center;
-      font-size:14px;
+    table td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+      font-size: 14px;
     }
 
-    .totais{
-      margin-top:25px;
-      background:#eff6ff;
-      padding:20px;
-      border-radius:10px;
+    .totais {
+      margin-top: 25px;
+      background: #eff6ff;
+      padding: 20px;
+      border-radius: 10px;
     }
 
-    .totais h2{
-      margin-bottom:15px;
-      color:#1e3a8a;
+    .totais h2 {
+      margin-bottom: 15px;
+      color: #1e3a8a;
     }
 
-    .totais-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:12px;
+    .totais-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
     }
 
-    .card{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
-    .card strong{
-      display:block;
-      margin-bottom:5px;
-      color:#2563eb;
+    .card strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #2563eb;
     }
 
-    @media(max-width:700px){
-      table{
-        display:block;
-        overflow-x:auto;
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @media(max-width:700px) {
+      table {
+        display: block;
+        overflow-x: auto;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
 
     <h1>Registro TAC/DRI Nutricional</h1>
 
+    <div id="apiStatus" class="api-status offline">
+      API desconectada
+    </div>
+
     <div class="form-grid">
 
       <div class="field">
         <label>Nome do alimento</label>
-        <input type="text" id="nome">
+        <input type="text" id="nome" placeholder="Ex: arroz">
       </div>
 
       <div class="field">
         <label>Quantidade (g)</label>
-        <input type="number" id="quantidade">
-      </div>
-
-      <div class="field">
-        <label>Carboidratos (g)</label>
-        <input type="number" id="carbo">
-      </div>
-
-      <div class="field">
-        <label>Proteínas (g)</label>
-        <input type="number" id="proteina">
-      </div>
-
-      <div class="field">
-        <label>Gorduras (g)</label>
-        <input type="number" id="gordura">
-      </div>
-
-      <div class="field">
-        <label>Fibras (g)</label>
-        <input type="number" id="fibra">
-      </div>
-
-      <div class="field">
-        <label>Sódio (mg)</label>
-        <input type="number" id="sodio">
-      </div>
-
-      <div class="field">
-        <label>Cálcio (mg)</label>
-        <input type="number" id="calcio">
-      </div>
-
-      <div class="field">
-        <label>Ferro (mg)</label>
-        <input type="number" id="ferro">
+        <input type="number" id="quantidade" placeholder="100">
       </div>
 
     </div>
 
     <div class="buttons">
-      <button class="btn-add" onclick="adicionarAlimento()">
-        Adicionar Alimento
+
+      <button class="btn-add" onclick="adicionarAlimentoAPI()">
+        Consultar na TACO
       </button>
 
       <button class="btn-clear" onclick="limparTabela()">
         Limpar Registro
       </button>
+
     </div>
 
     <table>
+
       <thead>
         <tr>
           <th>Alimento</th>
@@ -224,12 +221,14 @@
           <th>Carb.</th>
           <th>Prot.</th>
           <th>Gord.</th>
-          <th>Fibras</th>
+          <th>Fibra</th>
+          <th>Sódio</th>
           <th>Kcal</th>
         </tr>
       </thead>
 
       <tbody id="tabelaAlimentos"></tbody>
+
     </table>
 
     <div class="totais">
@@ -286,78 +285,155 @@
 
   <script>
 
+    /*
+      URL DA API
+      ALTERE PARA SUA URL DO RENDER/RAILWAY
+    */
+
+    const API_URL = "http://localhost:3000";
+
     let totais = {
-      carbo:0,
-      proteina:0,
-      gordura:0,
-      fibra:0,
-      sodio:0,
-      calcio:0,
-      ferro:0,
-      kcal:0
+      carbo: 0,
+      proteina: 0,
+      gordura: 0,
+      fibra: 0,
+      sodio: 0,
+      calcio: 0,
+      ferro: 0,
+      kcal: 0
     };
 
-    function adicionarAlimento(){
+    async function verificarAPI() {
+
+      try {
+
+        const response = await fetch(API_URL + "/alimentos");
+
+        if (response.ok) {
+
+          const status = document.getElementById("apiStatus");
+
+          status.classList.remove("offline");
+          status.classList.add("online");
+
+          status.innerText = "API conectada";
+
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    }
+
+    verificarAPI();
+
+    async function adicionarAlimentoAPI() {
 
       const nome = document.getElementById("nome").value;
 
-      const quantidade = Number(document.getElementById("quantidade").value);
+      const quantidade = Number(
+        document.getElementById("quantidade").value
+      );
 
-      const carbo = Number(document.getElementById("carbo").value);
+      if (nome === "") {
 
-      const proteina = Number(document.getElementById("proteina").value);
-
-      const gordura = Number(document.getElementById("gordura").value);
-
-      const fibra = Number(document.getElementById("fibra").value);
-
-      const sodio = Number(document.getElementById("sodio").value);
-
-      const calcio = Number(document.getElementById("calcio").value);
-
-      const ferro = Number(document.getElementById("ferro").value);
-
-      if(nome === ""){
-        alert("Informe o nome do alimento.");
+        alert("Informe o alimento");
         return;
+
       }
 
-      const kcal =
-        (carbo * 4) +
-        (proteina * 4) +
-        (gordura * 9);
+      if (quantidade <= 0) {
 
-      const tabela = document.getElementById("tabelaAlimentos");
+        alert("Informe a quantidade");
+        return;
+
+      }
+
+      document.body.classList.add("loading");
+
+      try {
+
+        const response = await fetch(
+          API_URL + "/calcular",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              nome,
+              quantidade
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (data.erro) {
+
+          alert(data.erro);
+          return;
+
+        }
+
+        adicionarNaTabela(data);
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("Erro ao conectar com a API");
+
+      } finally {
+
+        document.body.classList.remove("loading");
+
+      }
+
+    }
+
+    function adicionarNaTabela(data) {
+
+      const tabela = document.getElementById(
+        "tabelaAlimentos"
+      );
 
       tabela.innerHTML += `
         <tr>
-          <td>${nome}</td>
-          <td>${quantidade} g</td>
-          <td>${carbo} g</td>
-          <td>${proteina} g</td>
-          <td>${gordura} g</td>
-          <td>${fibra} g</td>
-          <td>${kcal.toFixed(2)} kcal</td>
+          <td>${data.nome}</td>
+          <td>${data.quantidade} g</td>
+          <td>${data.carboidrato.toFixed(2)} g</td>
+          <td>${data.proteina.toFixed(2)} g</td>
+          <td>${data.gordura.toFixed(2)} g</td>
+          <td>${data.fibra.toFixed(2)} g</td>
+          <td>${data.sodio.toFixed(2)} mg</td>
+          <td>${data.kcal.toFixed(2)} kcal</td>
         </tr>
       `;
 
-      totais.carbo += carbo;
-      totais.proteina += proteina;
-      totais.gordura += gordura;
-      totais.fibra += fibra;
+      totais.carbo += data.carboidrato;
+      totais.proteina += data.proteina;
+      totais.gordura += data.gordura;
+      totais.fibra += data.fibra;
 
-      totais.sodio += sodio;
-      totais.calcio += calcio;
-      totais.ferro += ferro;
+      totais.sodio += data.sodio;
+      totais.calcio += data.calcio;
+      totais.ferro += data.ferro;
 
-      totais.kcal += kcal;
+      totais.kcal += data.kcal;
 
       atualizarTotais();
 
       limparCampos();
+
     }
 
-    function atualizarTotais(){
+    function atualizarTotais() {
 
       document.getElementById("totalCarbo")
         .innerText = totais.carbo.toFixed(2) + " g";
@@ -382,48 +458,40 @@
 
       document.getElementById("totalKcal")
         .innerText = totais.kcal.toFixed(2) + " kcal";
+
     }
 
-    function limparCampos(){
+    function limparCampos() {
 
       document.getElementById("nome").value = "";
 
       document.getElementById("quantidade").value = "";
 
-      document.getElementById("carbo").value = "";
-
-      document.getElementById("proteina").value = "";
-
-      document.getElementById("gordura").value = "";
-
-      document.getElementById("fibra").value = "";
-
-      document.getElementById("sodio").value = "";
-
-      document.getElementById("calcio").value = "";
-
-      document.getElementById("ferro").value = "";
     }
 
-    function limparTabela(){
+    function limparTabela() {
 
-      document.getElementById("tabelaAlimentos").innerHTML = "";
+      document.getElementById(
+        "tabelaAlimentos"
+      ).innerHTML = "";
 
       totais = {
-        carbo:0,
-        proteina:0,
-        gordura:0,
-        fibra:0,
-        sodio:0,
-        calcio:0,
-        ferro:0,
-        kcal:0
+        carbo: 0,
+        proteina: 0,
+        gordura: 0,
+        fibra: 0,
+        sodio: 0,
+        calcio: 0,
+        ferro: 0,
+        kcal: 0
       };
 
       atualizarTotais();
+
     }
 
   </script>
 
 </body>
+
 </html>
