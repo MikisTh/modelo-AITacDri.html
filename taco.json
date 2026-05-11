@@ -1,0 +1,25 @@
+[
+  {
+    "nome": "arroz",
+    "kcal": 128,
+    "carboidrato": 28,
+    "proteina": 2.5,
+    "gordura": 0.3,
+    "fibra": 1,
+    "sodio": 1,
+    "calcio": 10,
+    "ferro": 0.2
+  },
+
+  {
+    "nome": "frango",
+    "kcal": 163,
+    "carboidrato": 0,
+    "proteina": 31,
+    "gordura": 3.6,
+    "fibra": 0,
+    "sodio": 74,
+    "calcio": 15,
+    "ferro": 1
+  }
+]
