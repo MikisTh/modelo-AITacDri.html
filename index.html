@@ -1,496 +1,306 @@
-<!-- Arquivo: RegistroTacDri.html -->
-<!DOCTYPE html>
-<html lang="pt-BR">
+<script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+const API_URL =
+"https://modelo-aitacdri-html-1.onrender.com";
 
-  <title>Registro TAC/DRI</title>
+let totais = {
+  carbo: 0,
+  proteina: 0,
+  gordura: 0,
+  fibra: 0,
+  sodio: 0,
+  calcio: 0,
+  ferro: 0,
+  kcal: 0
+};
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
+async function verificarAPI() {
+
+  const status =
+    document.getElementById("apiStatus");
+
+  try {
+
+    const response = await fetch(
+      API_URL + "/alimentos"
+    );
+
+    if (!response.ok) {
+      throw new Error("API inválida");
     }
 
-    body {
-      background: #f4f6f9;
-      padding: 30px;
-      color: #222;
+    const data = await response.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error("Resposta inválida");
     }
 
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+    status.classList.remove("offline");
+    status.classList.add("online");
 
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #1e3a8a;
-    }
+    status.innerText =
+      "API conectada";
 
-    .api-status {
-      margin-bottom: 20px;
-      padding: 12px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
+  } catch (error) {
 
-    .online {
-      background: #dcfce7;
-      color: #166534;
-    }
+    console.error(error);
 
-    .offline {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+    status.classList.remove("online");
+    status.classList.add("offline");
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+    status.innerText =
+      "API desconectada";
 
-    .field {
-      display: flex;
-      flex-direction: column;
-    }
+  }
 
-    label {
-      margin-bottom: 6px;
-      font-weight: bold;
-      font-size: 14px;
-    }
+}
 
-    input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
+verificarAPI();
 
-    button {
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
+async function adicionarAlimentoAPI() {
 
-    .btn-add {
-      background: #2563eb;
-      color: white;
-    }
+  const nome =
+    document.getElementById("nome")
+    .value
+    .trim();
 
-    .btn-add:hover {
-      background: #1d4ed8;
-    }
+  const quantidade =
+    Number(
+      document.getElementById("quantidade")
+      .value
+    );
 
-    .btn-clear {
-      background: #dc2626;
-      color: white;
-    }
+  if (!nome) {
 
-    .btn-clear:hover {
-      background: #b91c1c;
-    }
+    alert("Informe o alimento");
+    return;
 
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+  if (!quantidade || quantidade <= 0) {
 
-    table thead {
-      background: #1e3a8a;
-      color: white;
-    }
+    alert("Informe a quantidade");
+    return;
 
-    table th,
-    table td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: center;
-      font-size: 14px;
-    }
+  }
 
-    .totais {
-      margin-top: 25px;
-      background: #eff6ff;
-      padding: 20px;
-      border-radius: 10px;
-    }
+  document.body.classList.add("loading");
 
-    .totais h2 {
-      margin-bottom: 15px;
-      color: #1e3a8a;
-    }
+  try {
 
-    .totais-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-    }
+    const response = await fetch(
+      API_URL + "/calcular",
+      {
+        method: "POST",
 
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    }
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
 
-    .card strong {
-      display: block;
-      margin-bottom: 5px;
-      color: #2563eb;
-    }
-
-    .loading {
-      opacity: 0.6;
-      pointer-events: none;
-    }
-
-    @media(max-width:700px) {
-      table {
-        display: block;
-        overflow-x: auto;
+        body: JSON.stringify({
+          nome,
+          quantidade
+        })
       }
-    }
-  </style>
-</head>
+    );
 
-<body>
+    if (!response.ok) {
 
-  <div class="container">
-
-    <h1>Registro TAC/DRI Nutricional</h1>
-
-    <div id="apiStatus" class="api-status offline">
-      API desconectada
-    </div>
-
-    <div class="form-grid">
-
-      <div class="field">
-        <label>Nome do alimento</label>
-        <input type="text" id="nome" placeholder="Ex: arroz">
-      </div>
-
-      <div class="field">
-        <label>Quantidade (g)</label>
-        <input type="number" id="quantidade" placeholder="100">
-      </div>
-
-    </div>
-
-    <div class="buttons">
-
-      <button class="btn-add" onclick="adicionarAlimentoAPI()">
-        Consultar na TACO
-      </button>
-
-      <button class="btn-clear" onclick="limparTabela()">
-        Limpar Registro
-      </button>
-
-    </div>
-
-    <table>
-
-      <thead>
-        <tr>
-          <th>Alimento</th>
-          <th>Qtd (g)</th>
-          <th>Carb.</th>
-          <th>Prot.</th>
-          <th>Gord.</th>
-          <th>Fibra</th>
-          <th>Sódio</th>
-          <th>Kcal</th>
-        </tr>
-      </thead>
-
-      <tbody id="tabelaAlimentos"></tbody>
-
-    </table>
-
-    <div class="totais">
-
-      <h2>Total Diário</h2>
-
-      <div class="totais-grid">
-
-        <div class="card">
-          <strong>Carboidratos</strong>
-          <span id="totalCarbo">0 g</span>
-        </div>
-
-        <div class="card">
-          <strong>Proteínas</strong>
-          <span id="totalProteina">0 g</span>
-        </div>
-
-        <div class="card">
-          <strong>Gorduras</strong>
-          <span id="totalGordura">0 g</span>
-        </div>
-
-        <div class="card">
-          <strong>Fibras</strong>
-          <span id="totalFibra">0 g</span>
-        </div>
-
-        <div class="card">
-          <strong>Sódio</strong>
-          <span id="totalSodio">0 mg</span>
-        </div>
-
-        <div class="card">
-          <strong>Cálcio</strong>
-          <span id="totalCalcio">0 mg</span>
-        </div>
-
-        <div class="card">
-          <strong>Ferro</strong>
-          <span id="totalFerro">0 mg</span>
-        </div>
-
-        <div class="card">
-          <strong>Total kcal</strong>
-          <span id="totalKcal">0 kcal</span>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-
-    /*
-      URL DA API
-      ALTERE PARA SUA URL DO RENDER/RAILWAY
-    */
-
-   const API_URL = "https://modelo-aitacdri-html-1.onrender.com";
-    let totais = {
-      carbo: 0,
-      proteina: 0,
-      gordura: 0,
-      fibra: 0,
-      sodio: 0,
-      calcio: 0,
-      ferro: 0,
-      kcal: 0
-    };
-
-    async function verificarAPI() {
-
-      try {
-
-        const response = await fetch(API_URL + "/alimentos");
-
-        if (response.ok) {
-
-          const status = document.getElementById("apiStatus");
-
-          status.classList.remove("offline");
-          status.classList.add("online");
-
-          status.innerText = "API conectada";
-
-        }
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
-    }
-
-    verificarAPI();
-
-    async function adicionarAlimentoAPI() {
-
-      const nome = document.getElementById("nome").value;
-
-      const quantidade = Number(
-        document.getElementById("quantidade").value
+      throw new Error(
+        "Erro ao consultar API"
       );
 
-      if (nome === "") {
+    }
 
-        alert("Informe o alimento");
-        return;
+    const data =
+      await response.json();
 
-      }
+    if (data.erro) {
 
-      if (quantidade <= 0) {
-
-        alert("Informe a quantidade");
-        return;
-
-      }
-
-      document.body.classList.add("loading");
-
-      try {
-
-        const response = await fetch(
-          API_URL + "/calcular",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify({
-              nome,
-              quantidade
-            })
-          }
-        );
-
-        const data = await response.json();
-
-        if (data.erro) {
-
-          alert(data.erro);
-          return;
-
-        }
-
-        adicionarNaTabela(data);
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert("Erro ao conectar com a API");
-
-      } finally {
-
-        document.body.classList.remove("loading");
-
-      }
+      alert(data.erro);
+      return;
 
     }
 
-    function adicionarNaTabela(data) {
+    adicionarNaTabela(data);
 
-      const tabela = document.getElementById(
-        "tabelaAlimentos"
-      );
+  } catch (error) {
 
-      tabela.innerHTML += `
-        <tr>
-          <td>${data.nome}</td>
-          <td>${data.quantidade} g</td>
-          <td>${data.carboidrato.toFixed(2)} g</td>
-          <td>${data.proteina.toFixed(2)} g</td>
-          <td>${data.gordura.toFixed(2)} g</td>
-          <td>${data.fibra.toFixed(2)} g</td>
-          <td>${data.sodio.toFixed(2)} mg</td>
-          <td>${data.kcal.toFixed(2)} kcal</td>
-        </tr>
-      `;
+    console.error(error);
 
-      totais.carbo += data.carboidrato;
-      totais.proteina += data.proteina;
-      totais.gordura += data.gordura;
-      totais.fibra += data.fibra;
+    alert(
+      "Erro ao conectar com a API"
+    );
 
-      totais.sodio += data.sodio;
-      totais.calcio += data.calcio;
-      totais.ferro += data.ferro;
+  } finally {
 
-      totais.kcal += data.kcal;
+    document.body
+      .classList
+      .remove("loading");
 
-      atualizarTotais();
+  }
 
-      limparCampos();
+}
 
-    }
+function adicionarNaTabela(data) {
 
-    function atualizarTotais() {
+  const tabela =
+    document.getElementById(
+      "tabelaAlimentos"
+    );
 
-      document.getElementById("totalCarbo")
-        .innerText = totais.carbo.toFixed(2) + " g";
+  tabela.innerHTML += `
+    <tr>
+      <td>${data.nome}</td>
 
-      document.getElementById("totalProteina")
-        .innerText = totais.proteina.toFixed(2) + " g";
+      <td>
+        ${data.quantidade} g
+      </td>
 
-      document.getElementById("totalGordura")
-        .innerText = totais.gordura.toFixed(2) + " g";
+      <td>
+        ${Number(
+          data.carboidrato
+        ).toFixed(2)} g
+      </td>
 
-      document.getElementById("totalFibra")
-        .innerText = totais.fibra.toFixed(2) + " g";
+      <td>
+        ${Number(
+          data.proteina
+        ).toFixed(2)} g
+      </td>
 
-      document.getElementById("totalSodio")
-        .innerText = totais.sodio.toFixed(2) + " mg";
+      <td>
+        ${Number(
+          data.gordura
+        ).toFixed(2)} g
+      </td>
 
-      document.getElementById("totalCalcio")
-        .innerText = totais.calcio.toFixed(2) + " mg";
+      <td>
+        ${Number(
+          data.fibra
+        ).toFixed(2)} g
+      </td>
 
-      document.getElementById("totalFerro")
-        .innerText = totais.ferro.toFixed(2) + " mg";
+      <td>
+        ${Number(
+          data.sodio
+        ).toFixed(2)} mg
+      </td>
 
-      document.getElementById("totalKcal")
-        .innerText = totais.kcal.toFixed(2) + " kcal";
+      <td>
+        ${Number(
+          data.kcal
+        ).toFixed(2)} kcal
+      </td>
+    </tr>
+  `;
 
-    }
+  totais.carbo +=
+    Number(data.carboidrato);
 
-    function limparCampos() {
+  totais.proteina +=
+    Number(data.proteina);
 
-      document.getElementById("nome").value = "";
+  totais.gordura +=
+    Number(data.gordura);
 
-      document.getElementById("quantidade").value = "";
+  totais.fibra +=
+    Number(data.fibra);
 
-    }
+  totais.sodio +=
+    Number(data.sodio);
 
-    function limparTabela() {
+  totais.calcio +=
+    Number(data.calcio);
 
-      document.getElementById(
-        "tabelaAlimentos"
-      ).innerHTML = "";
+  totais.ferro +=
+    Number(data.ferro);
 
-      totais = {
-        carbo: 0,
-        proteina: 0,
-        gordura: 0,
-        fibra: 0,
-        sodio: 0,
-        calcio: 0,
-        ferro: 0,
-        kcal: 0
-      };
+  totais.kcal +=
+    Number(data.kcal);
 
-      atualizarTotais();
+  atualizarTotais();
 
-    }
+  limparCampos();
 
-  </script>
+}
 
-</body>
+function atualizarTotais() {
 
-</html>
+  document.getElementById(
+    "totalCarbo"
+  ).innerText =
+    totais.carbo.toFixed(2) + " g";
+
+  document.getElementById(
+    "totalProteina"
+  ).innerText =
+    totais.proteina.toFixed(2) + " g";
+
+  document.getElementById(
+    "totalGordura"
+  ).innerText =
+    totais.gordura.toFixed(2) + " g";
+
+  document.getElementById(
+    "totalFibra"
+  ).innerText =
+    totais.fibra.toFixed(2) + " g";
+
+  document.getElementById(
+    "totalSodio"
+  ).innerText =
+    totais.sodio.toFixed(2) + " mg";
+
+  document.getElementById(
+    "totalCalcio"
+  ).innerText =
+    totais.calcio.toFixed(2) + " mg";
+
+  document.getElementById(
+    "totalFerro"
+  ).innerText =
+    totais.ferro.toFixed(2) + " mg";
+
+  document.getElementById(
+    "totalKcal"
+  ).innerText =
+    totais.kcal.toFixed(2) + " kcal";
+
+}
+
+function limparCampos() {
+
+  document.getElementById(
+    "nome"
+  ).value = "";
+
+  document.getElementById(
+    "quantidade"
+  ).value = "";
+
+}
+
+function limparTabela() {
+
+  document.getElementById(
+    "tabelaAlimentos"
+  ).innerHTML = "";
+
+  totais = {
+    carbo: 0,
+    proteina: 0,
+    gordura: 0,
+    fibra: 0,
+    sodio: 0,
+    calcio: 0,
+    ferro: 0,
+    kcal: 0
+  };
+
+  atualizarTotais();
+
+}
+
+</script>
