@@ -8,17 +8,59 @@ app.use(express.json());
 
 const alimentos = require("./taco.json");
 
-app.get("/alimentos", (req, res) => {
-  res.json(alimentos);
+/*
+  ROTA PRINCIPAL
+*/
+
+app.get("/", (req, res) => {
+
+  res.send("API TACO ONLINE");
+
 });
+
+/*
+  LISTAR ALIMENTOS
+*/
+
+app.get("/alimentos", (req, res) => {
+
+  res.json(alimentos);
+
+});
+
+/*
+  CALCULAR COMPOSIÇÃO
+*/
 
 app.post("/calcular", (req, res) => {
 
   const { nome, quantidade } = req.body;
 
+  /*
+    VALIDAÇÕES
+  */
+
+  if (!nome || !quantidade) {
+
+    return res.status(400).json({
+      erro: "Nome e quantidade são obrigatórios"
+    });
+
+  }
+
+  /*
+    BUSCAR ALIMENTO
+  */
+
   const alimento = alimentos.find(
-    a => a.nome.toLowerCase() === nome.toLowerCase()
+    a =>
+      a.nome.toLowerCase()
+      === nome.toLowerCase()
   );
+
+  /*
+    NÃO ENCONTRADO
+  */
 
   if (!alimento) {
 
@@ -28,9 +70,13 @@ app.post("/calcular", (req, res) => {
 
   }
 
+  /*
+    CÁLCULO PROPORCIONAL
+  */
+
   const fator = quantidade / 100;
 
-  res.json({
+  const resultado = {
 
     nome: alimento.nome,
 
@@ -60,10 +106,27 @@ app.post("/calcular", (req, res) => {
     kcal:
       alimento.kcal * fator
 
-  });
+  };
+
+  res.json(resultado);
 
 });
 
-app.listen(3000, () => {
-  console.log("API rodando");
+/*
+  PORTA RENDER
+*/
+
+const PORT =
+  process.env.PORT || 3000;
+
+/*
+  INICIAR SERVIDOR
+*/
+
+app.listen(PORT, () => {
+
+  console.log(
+    `API rodando na porta ${PORT}`
+  );
+
 });
